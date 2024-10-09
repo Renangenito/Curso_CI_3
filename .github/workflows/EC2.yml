@@ -4,6 +4,21 @@ on:
   workflow_call:
 
 jobs:
+  test:
+    runs-on: ubuntu-20.04  # Ambiente atualizado
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Go 1.18  # Definindo a versão correta do Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18
+
+    - name: Run tests
+      run: go test ./... # Comando de teste do Go
+
   EC2:
     runs-on: ubuntu-latest
     steps:
@@ -13,7 +28,7 @@ jobs:
     - name: Download a Build Artifact
       uses: actions/download-artifact@v3.0.0
       with:
-        name: programa # Certifique-se de que esse nome corresponde ao artefato gerado
+        name: programa
 
     - name: Deploy to Staging Server via SSH
       uses: easingthemes/ssh-deploy@main
@@ -22,25 +37,6 @@ jobs:
         REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
         REMOTE_USER: ${{ secrets.REMOTE_USER }}
         TARGET: /home/${{ secrets.REMOTE_USER }}
-        EXCLUDE: "postgres-data"
       with:
-        source: ./ # Diretório que contém os arquivos que você quer enviar
-        target: /home/${{ secrets.REMOTE_USER }}/deploy/ # Diretório no servidor de destino
-
-    - name: Executing remote SSH commands using password
-      uses: appleboy/ssh-action@v1.1.0
-      with:
-        host: ${{ secrets.REMOTE_HOST }}
-        username: ${{ secrets.REMOTE_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
-        script: |
-          export HOST=${{ secrets.DBHOST }}
-          export USER=${{ secrets.DBUSER }}
-          export PASSWORD=${{ secrets.DBPASSWORD }}
-          export DBNAME=${{ secrets.DBNAME }}
-          export DBPORT=${{ secrets.DBPORT }}
-          export PORT=8000
-          cd /home/${{ secrets.REMOTE_USER }}/deploy/
-          chmod +x main
-          nohup ./main &
+        source: ./  # Diretório local
+        target: /home/${{ secrets.REMOTE_USER }}/deploy/  # Diretório remoto
