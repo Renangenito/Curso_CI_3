@@ -5,8 +5,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04  # Ambiente atualizado
-
+    runs-on: ubuntu-latest  # Atualizado para uma versão suportada
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -16,8 +15,11 @@ jobs:
       with:
         go-version: 1.18
 
-    - name: Run tests
-      run: go test ./... # Comando de teste do Go
+    - name: Install dependencies  # Instalando as dependências
+      run: go mod download
+
+    - name: Run tests  # Executando os testes
+      run: go test ./...
 
   EC2:
     runs-on: ubuntu-latest
