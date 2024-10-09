@@ -14,7 +14,7 @@ jobs:
     # Artifact name
         name: programa
     - uses: actions/checkout@v3
-
+    
     - name: Deploy to Staging server
       uses: easingthemes/ssh-deploy@main
       env:
@@ -23,9 +23,9 @@ jobs:
         REMOTE_USER: ${{ secrets.REMOTE_USER }}
         TARGET: /home/${{ secrets.REMOTE_USER }}
         EXCLUDE: "postgres-data"
-
+        
     - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@v1.1.0
+      uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.REMOTE_HOST }}
         username: ${{ secrets.REMOTE_USER }}
@@ -36,7 +36,5 @@ jobs:
           export USER=${{ secrets.DBUSER }}
           export PASSWORD=${{ secrets.DBPASSWORD }}
           export DBNAME=${{ secrets.DBNAME }}
-          export DBPORT=${{ secrets.DBPORT}}
+          export DBPORT=${{ secrets.DBPORT }}
           export PORT=8000
-          chmod +x main
-          nohup ./main & 
